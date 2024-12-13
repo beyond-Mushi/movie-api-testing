@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.movieapi.auth.entity.RefreshToken;
 import org.example.movieapi.auth.entity.User;
 import org.example.movieapi.auth.service.AuthService;
+import org.example.movieapi.auth.service.JwtService;
 import org.example.movieapi.auth.service.RefreshTokenService;
 import org.example.movieapi.auth.utils.AuthResponse;
 import org.example.movieapi.auth.utils.LoginRequest;
@@ -22,6 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) throws InstantiationException, IllegalAccessException {
@@ -33,11 +35,18 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) throws InstantiationException, IllegalAccessException {
         RefreshToken refreshToken = refreshTokenService
                 .verifyRefreshToken(refreshTokenRequest.getRefreshToken());
         User user = refreshToken.getUser();
-        return null;
+        String accessToken = jwtService.generateToken(user);
+        return ResponseEntity.ok(
+                AuthResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken.getRefreshToken())
+                        .build()
+        );
     }
 
 }

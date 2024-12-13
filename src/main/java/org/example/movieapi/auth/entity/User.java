@@ -42,13 +42,12 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;
 
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    private boolean isEnabled = true;
-    private boolean isAccountNonExpired = true;
-    private boolean isAccountNonLocked = true;
-    private boolean isCredentialsNonExpired = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -67,21 +66,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.isAccountNonExpired;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.isAccountNonLocked;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.isCredentialsNonExpired;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.isEnabled;
+        return true;
     }
 }
